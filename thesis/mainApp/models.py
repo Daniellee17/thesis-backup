@@ -4,9 +4,9 @@ from django.db import models
 #ONE CLASS ONE TABLE
 
 class sensors(models.Model):
-    temperature = models.FloatField(max_length=250, default=0.0);
-    moisture = models.FloatField(max_length=250, default=0.0);
-    humidity = models.FloatField(max_length=250, default=0.0);
+    temperature = models.IntegerField(default=1);
+    moisture = models.IntegerField(default=2);
+    humidity = models.IntegerField(default=3);
     summary = models.TextField(max_length=250, default="None");
     date = models.DateTimeField(auto_now=True);
 
@@ -18,6 +18,6 @@ class devicestatus(models.Model):
     seedStatus = models.TextField(max_length=250, default="off");
     date = models.DateTimeField(auto_now=True);
 
-class cameraSnaps(models.Model):
+class camerasnaps(models.Model):
     camera = models.ImageField(default='default.png', blank=True);
     date = models.DateTimeField(auto_now=True);
