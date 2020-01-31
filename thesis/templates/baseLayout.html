@@ -1,0 +1,250 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thesis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+
+<body>
+  {% block content %}
+  {% endblock %}
+</body>
+
+<script src="/assets/js/jquery-2.2.4.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script>
+  function getSensorValues() {
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'getSensorValues',
+
+      },
+      success: function(sensorsJson) {
+
+        $('#labelTemperature').text(sensorsJson.currentTemperatureJSON);
+        $('#labelHumidity').text(sensorsJson.currentHumidityJSON);
+        $('#labelMoisture').text(sensorsJson.currentMoistureJSON);
+        $('#labelSummary').text(sensorsJson.currentSummaryJSON);
+      },
+
+    });
+  }
+
+  function snapImage() {
+
+    var date1 = new Date();
+
+ //   if (date1.getHours() === 19 && date1.getMinutes() === 52) {
+      
+      //Change getHours and getMinutes depending on platform used
+      //Rpi 24 hr format
+      //Ubuntu 24 hr format
+      //Windows 12 hr format
+
+      //alert(date1);
+
+      $.ajax({
+        type: 'POST',
+        url: '{% url "mainPage" %}',
+        data: {
+
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          action: 'snapImage',
+
+        },
+        success: function(cameraJson) {
+          var date = new Date(cameraJson.cameraDateJSON);
+          //var newDate = date.replace("GMT+0800 (Philippine Standard Time)", " ");
+          //alert(newDate);
+          $('#cameraID').attr('src', cameraJson.cameraURLJSON);
+          $('#dateID').text('As of: ' + cameraJson.cameraDateJSON);
+
+        },
+
+      });
+   // }
+  }
+
+  $(document).ready(function() {
+    setInterval(getSensorValues, 10000);
+  });
+
+  $(document).ready(function() {
+    setInterval(snapImage, 12000);
+  });
+</script>
+
+
+<script>
+
+  $(".onFan").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onFan',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelFans').text('on');
+      },
+
+    });
+  });
+
+  $(".offFan").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offFan',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelFans').text('off');
+      },
+
+    });
+  });
+
+  $(".onLights").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onLights',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelLights').text('on');
+      },
+
+    });
+  });
+
+  $(".offLights").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offLights',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelLights').text('off');
+      },
+
+    });
+  });
+
+  $(".onWater").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onWater',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelWater').text('on');
+      },
+
+    });
+  });
+
+  $(".offWater").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offWater',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelWater').text('off');
+      },
+
+    });
+  });
+
+  $(".onSeed").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onSeed',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelSeed').text('on');
+      },
+
+    });
+  });
+
+  $(".offSeed").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offSeed',
+
+      },
+      success: function(json) {
+        document.getElementById("buttonForm").reset();
+        $('#labelSeed').text('off');
+      },
+
+    });
+  });
+</script>
+
+</html>
