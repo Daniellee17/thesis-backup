@@ -1,0 +1,350 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thesis</title>
+  <meta name=”viewport” content=”width=device-width, initial-scale=1″>
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+
+<body>
+  {% block content %}
+  {% endblock %}
+</body>
+
+<script src="/assets/js/jquery-2.2.4.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script>
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "16%";
+  }
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+</script>
+
+<script>
+  function getSensorValues() {
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'getSensorValues',
+
+      },
+      success: function(sensorsJson) {
+
+        $('#labelTemperature').text('Temperature: ' + sensorsJson.currentTemperatureJSON);
+        $('#labelHumidity').text('Humidity: ' + sensorsJson.currentHumidityJSON);
+        $('#labelMoisture').text('S. Moisture: ' + sensorsJson.currentMoistureJSON);
+        $('#labelSummary').text('Summary: ' + sensorsJson.currentSummaryJSON);
+      },
+
+    });
+  }
+
+  function snapImage() {
+
+    var date1 = new Date();
+
+    if (date1.getHours() === 19 && date1.getMinutes() === 52) {
+
+      //Change getHours and getMinutes depending on platform used
+      //Rpi 24 hr format
+      //Ubuntu 24 hr format
+      //Windows 12 hr format
+
+      //alert(date1);
+
+      $.ajax({
+        type: 'POST',
+        url: '{% url "mainPage" %}',
+        data: {
+
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          action: 'snapImage',
+
+        },
+        success: function(cameraJson) {
+          $('#cameraID').attr('src', cameraJson.cameraURLJSON);
+          $('#dateID').text('As of: ' + cameraJson.cameraDateJSON);
+          $('#labelPlant1Growth').text(cameraJson.plant1JASON);
+          $('#labelPlant2Growth').text(cameraJson.plant2JASON);
+          $('#labelPlant3Growth').text(cameraJson.plant3JASON);
+          $('#labelPlant4Growth').text(cameraJson.plant4JASON);
+          $('#labelPlant5Growth').text(cameraJson.plant5JASON);
+          $('#labelPlant6Growth').text(cameraJson.plant6JASON);
+          $('#labelPlant7Growth').text(cameraJson.plant7JASON);
+          $('#labelPlant8Growth').text(cameraJson.plant8JASON);
+          $('#labelPlant9Growth').text(cameraJson.plant9JASON);
+          $('#labelPlant10Growth').text(cameraJson.plant10JASON);
+          $('#daysID').text(cameraJson.daysCounterJSON);
+          $('#lastDayID').text('Current: ' + cameraJson.cameraDateJSON);
+
+        },
+
+      });
+    }
+  }
+
+  $(document).ready(function() {
+    setInterval(getSensorValues, 10000);
+  });
+
+  $(document).ready(function() {
+    setInterval(snapImage, 12000);
+  });
+</script>
+
+<script>
+  $(".processImage").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'snapImage',
+
+      },
+      success: function(cameraJson) {
+        $('#cameraID').attr('src', cameraJson.cameraURLJSON);
+        $('#cameraDateID').text('As of: ' + cameraJson.cameraDateJSON);
+        $('#summaryDateID').text('As of: ' + cameraJson.cameraDateJSON);
+        $('#growthDateID').text('As of: ' + cameraJson.cameraDateJSON);
+        $('#labelPlant1Growth').text(cameraJson.plant1JASON);
+        $('#labelPlant2Growth').text(cameraJson.plant2JASON);
+        $('#labelPlant3Growth').text(cameraJson.plant3JASON);
+        $('#labelPlant4Growth').text(cameraJson.plant4JASON);
+        $('#labelPlant5Growth').text(cameraJson.plant5JASON);
+        $('#labelPlant6Growth').text(cameraJson.plant6JASON);
+        $('#labelPlant7Growth').text(cameraJson.plant7JASON);
+        $('#labelPlant8Growth').text(cameraJson.plant8JASON);
+        $('#labelPlant9Growth').text(cameraJson.plant9JASON);
+        $('#labelPlant10Growth').text(cameraJson.plant10JASON);
+        $('#daysID').text(cameraJson.daysCounterJSON);
+        $('#lastDayID').text('Current: ' + cameraJson.cameraDateJSON);
+
+      },
+
+    });
+  });
+
+
+  $(".fullReset").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'fullReset',
+
+      },
+      success: function(daysJSON) {
+        document.getElementById("mainForm").reset();
+        $('#cameraID').attr('src', '../assets/background/defaultBG.jpg');        
+        $('#firstDayID').text('Started: ' + daysJSON.day1Formatted);
+        $('#lastDayID').text('Current: ' + daysJSON.day1Formatted);
+        $('#cameraDateID').text('As of: ' + daysJSON.day1Formatted);
+        $('#summaryDateID').text('As of: ' + daysJSON.day1Formatted);
+        $('#growthDateID').text('As of: ' + daysJSON.day1Formatted);
+        
+        $('#labelPlant1Growth').text(0);
+        $('#labelPlant2Growth').text(0);
+        $('#labelPlant3Growth').text(0);
+        $('#labelPlant4Growth').text(0);
+        $('#labelPlant5Growth').text(0);
+        $('#labelPlant6Growth').text(0);
+        $('#labelPlant7Growth').text(0);
+        $('#labelPlant8Growth').text(0);
+        $('#labelPlant9Growth').text(0);
+        $('#labelPlant10Growth').text(0);    
+        
+        $('#labelFans').text('Fans: start');  
+        $('#labelLights').text('Lights: start');
+        $('#labelWater').text('Sprinkler: start');
+        $('#labelSeed').text('Seeder: start');
+        
+        $('#labelTemperature').text('Temperature: ' + daysJSON.temperatureJSON);
+        $('#labelHumidity').text('Humidity: ' + daysJSON.humidityJSON);
+        $('#labelMoisture').text('S. Moisture: ' + daysJSON.moistureJSON);
+        $('#labelSummary').text('Summary: ' + daysJSON.summaryJSON);
+        
+      },
+
+    });
+  });
+
+  $(".onFan").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onFan',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelFans').text('Fans: Activated');
+      },
+
+    });
+  });
+
+  $(".offFan").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offFan',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelFans').text('Fans: Deactivated');
+      },
+
+    });
+  });
+
+  $(".onLights").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onLights',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelLights').text('Lights: Activated');
+      },
+
+    });
+  });
+
+  $(".offLights").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offLights',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelLights').text('Lights: Deactivated');
+      },
+
+    });
+  });
+
+  $(".onWater").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onWater',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelWater').text('Sprinkler: Activated');
+      },
+
+    });
+  });
+
+  $(".offWater").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offWater',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelWater').text('Sprinkler: Deactivated');
+      },
+
+    });
+  });
+
+  $(".onSeed").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onSeed',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelSeed').text('Seeder: Activated');
+      },
+
+    });
+  });
+
+  $(".offSeed").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offSeed',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelSeed').text('Seeder: Deactivated');
+      },
+
+    });
+  });
+</script>
+
+</html>
