@@ -1,0 +1,1043 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>A.G.E Thesis</title>
+
+  <meta name=”viewport” content=”width=device-width, initial-scale=1″>
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+  <!-- Jquery for ajax calls -->
+  <script src="/assets/js/jquery-3.4.1.min.js"></script>
+
+  <!-- Alertify for confirmation prompts -->
+  <script src="/assets/alertify.js-0.3.11/lib/alertify.min.js"></script>
+  <link rel="stylesheet" href="/assets/alertify.js-0.3.11/themes//alertify.core.css" />
+  <link rel="stylesheet" href="/assets/alertify.js-0.3.11/themes/alertify.default.css" id="toggleCSS" />
+
+</head>
+
+<body>
+
+
+  <div class="title">
+    <img src="../assets/icons/rpiGif2.gif" class="titleLogoGif" />
+    <img src="../assets/icons/wifi.gif" class="titleLogo" />
+  </div>
+
+  <div id="mySidenav" class="hiddenSideNav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+    <div class="devicesContainer">
+
+      <div name="onLights_btn" id="onLights" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        On Lights
+      </div>
+
+      <div name="offLights_btn" id="offLights" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Off Lights
+      </div>
+
+      <div name="onFans_btn" id="onFan" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        On Fans
+      </div>
+
+      <div name="offFans_btn" id="offFan" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Off Fans
+      </div>
+
+      <div name="onCalibration_btn" id="onCalibration" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Calibrate
+      </div>
+
+      <div name="onWater_btn" id="onWater" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Water
+      </div>
+
+      <div name="onSeed_btn" id="onSeed" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Seed
+      </div>
+
+      <div name="camera_btn" id="processImage" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Capture
+      </div>
+
+      <div name="onMode1_btn" id="onMode1" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Mode 1
+      </div>
+
+      <div name="onMode2_btn" id="onMode2" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Mode 2
+      </div>
+
+      <div name="onMode2_btn" id="onMode3" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Mode 3
+      </div>
+
+      <div name="onMode2_btn" id="onMode4" class="btn">
+        <svg>
+          <rect x="0" y="0" fill="none" width="166" height="45" />
+        </svg>
+        Mode 4
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sidenav">
+    <div class="sidenavTitleContainer">
+      ADMIN TOOLS
+    </div>
+
+    <div class="sidenavButtonContainer">
+
+      <a href="{% url 'mainPage' %}"><img src="../assets/icons/sideNavIcons/dashboardIcon_white.png" class="sidenavIcon" />DASHBOARD</a>
+      <a href="{% url 'databasePage' %}"> <img src="../assets/icons/sideNavIcons/databaseIcon_white.png" class="sidenavIcon" />DATABASE</a>
+      <a onclick="openNav()"> <img src="../assets/icons/sideNavIcons/controllerIcon_white.png" class="sidenavIcon" />CONTROLLER</a>
+      <a class='fullReset' onclick="confirmFullReset()" type='submit'> <img src="../assets/icons/sideNavIcons/deleteIcon_white.png" class="sidenavIcon" />RESET</a>
+
+    </div>
+
+    <div class="sidenavTitleContainer" style="top: 27%">
+      FAQs
+    </div>
+    <div class="sidenavButtonContainer" style="top: 30.4%">
+      <a onclick="openNav()"> <img src="../assets/icons/sideNavIcons/cropIcon_white.png" class="sidenavIcon" /> CROP INFO</a>
+      <a onclick="openNav()"> <img src="../assets/icons/sideNavIcons/growthIcon_white.png" class="sidenavIcon" /> GROWTH INFO</a>
+      <a onclick="openNav()"> <img src="../assets/icons/sideNavIcons/contactIcon_white.png" class="sidenavIcon" /> CONTACT US</a>
+
+    </div>
+  </div>
+
+  {% block content %}
+  {% endblock %}
+
+</body>
+
+<script>
+  setup()
+
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+
+  function openNav() {
+    document.getElementById("mySidenav").style.width = "15%";
+  }
+
+  function confirmFullReset() {
+    var txt;
+
+    alertify.set({
+      labels: {
+        ok: " ",
+        cancel: " "
+      }
+    });
+
+    alertify.set({
+      delay: 2500
+    });
+
+    alertify.confirm("ARE YOU SURE YOU WANT TO RESET YOUR DATABASE?", function(e) {
+      if (e) {
+        $.ajax({
+          type: 'POST',
+          url: '{% url "mainPage" %}',
+          data: {
+
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            action: 'fullReset',
+
+          },
+          success: function(json) {
+            document.getElementById("mainForm").reset();
+
+            $('#labelMode').text("Mode " + json.mode_json);
+            $('#labelGrid').text(json.grid_json);
+            $('#firstDayID').text(json.startDate_json);
+            $('#lastDayID').text('Age since: ' + json.startDate_json);
+            $('#daysID').text(json.daysCounter_json);
+
+            $('#labelCalibration').text(json.calibration_json);
+            $('#labelFans').text(json.fans_json);
+            $('#labelLights').text(json.lights_json);
+            $('#labelWater').text(json.water_json);
+            $('#labelSeed').text(json.seeder_json);
+
+            $('#labelTemperature').text(json.temperature_json + " ° C");
+            $('#labelHumidity').text(json.humidity_json + " %");
+            $('#labelMoisture').text(json.soilMoisture_json + " %");
+            $('#labelTemperatureStatus').text("Temperature: " + json.temperatureStatus_json);
+            $('#labelHumidityStatus').text("Humidity: " + json.humidityStatus_json);
+            $('#labelSoilMoistureStatus').text("Soil Moisture: " + json.soilMoistureStatus_json);
+
+            $('#cameraID').attr('src', json.image_json);
+            $('#labelPlant1Growth').text(json.plant1_json);
+            $('#labelPlant2Growth').text(json.plant2_json);
+            $('#labelPlant3Growth').text(json.plant3_json);
+            $('#labelPlant4Growth').text(json.plant4_json);
+            $('#labelPlant5Growth').text(json.plant5_json);
+            $('#labelPlant6Growth').text(json.plant6_json);
+            $('#labelPlant7Growth').text(json.plant7_json);
+            $('#labelPlant8Growth').text(json.plant8_json);
+            $('#labelPlant9Growth').text(json.plant9_json);
+            $('#labelPlant10Growth').text(json.plant10_json);
+
+            $('#growthContainer').remove()
+            $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+              '<span class="tooltiptext">Crop Growth Status</span>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode1_vision_system_obj_global.plant1}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode1_vision_system_obj_global.plant2}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode1_vision_system_obj_global.plant3}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode1_vision_system_obj_global.plant4}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode1_vision_system_obj_global.plant5}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode1_vision_system_obj_global.plant6}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode1_vision_system_obj_global.plant7}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode1_vision_system_obj_global.plant8}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode1_vision_system_obj_global.plant9}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+              '</div>' +
+              '<div class="circle small">' +
+              '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode1_vision_system_obj_global.plant10}}</a>' +
+              '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+              '</div>' +
+              '</div>')
+
+          },
+        });
+
+        alertify.custom = alertify.extend("custom");
+        alertify.custom("Database Cleared!");
+      } else {
+        alertify.custom = alertify.extend("custom");
+        alertify.custom("Action Cancelled!");
+      }
+    });
+  }
+
+  function getSensorValues() {
+    var date1 = new Date();
+    //if (date1.getMinutes() === 00) {
+      $.ajax({
+        type: 'POST',
+        url: '{% url "mainPage" %}',
+        data: {
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          action: 'getSensorValues',
+        },
+        success: function(json) {
+          document.getElementById("mainForm").reset();
+          $('#daysID').text(json.daysCounter_json);
+          $('#lastDayID').text('Age since: ' + json.date_json);
+          $('#labelTemperature').text(json.temperature_json + " ° C");
+          $('#labelHumidity').text(json.humidity_json + " %");
+          $('#labelMoisture').text(json.soilMoisture_json + " %");
+          $('#labelTemperatureStatus').text("Temperature: " + json.temperatureStatus_json);
+          $('#labelHumidityStatus').text("Humidity: " + json.humidityStatus_json);
+          $('#labelSoilMoistureStatus').text("Soil Moisture: " + json.soilMoistureStatus_json);
+        },
+      });
+    //}
+  }
+
+
+  function snapImage() {
+    var date1 = new Date();
+    if (date1.getHours() === 15 && date1.getMinutes() === 06) {
+      //Change getHours and getMinutes depending on platform used
+      //Rpi 24 hr format
+      //Ubuntu 12 hr format
+      //Windows 12 hr format
+      //alert(date1);
+      $.ajax({
+        type: 'POST',
+        url: '{% url "mainPage" %}',
+        data: {
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          action: 'snapImage',
+        },
+        success: function(json) {
+          $('#cameraID').attr('src', json.image_json);
+          $('#dateID').text('As of: ' + json.cameraDateJSON);
+          $('#labelPlant1Growth').text(json.plant1_json);
+          $('#labelPlant2Growth').text(json.plant2_json);
+          $('#labelPlant3Growth').text(json.plant3_json);
+          $('#labelPlant4Growth').text(json.plant4_json);
+          $('#labelPlant5Growth').text(json.plant5_json);
+          $('#labelPlant6Growth').text(json.plant6_json);
+          $('#labelPlant7Growth').text(json.plant7_json);
+          $('#labelPlant8Growth').text(json.plant8_json);
+          $('#labelPlant9Growth').text(json.plant9_json);
+          $('#labelPlant10Growth').text(json.plant10_json);
+          $('#daysID').text(json.daysCounter_json);
+          $('#lastDayID').text('Age since: ' + json.cameraDateJSON);
+        },
+      });
+    }
+  }
+
+  $(document).ready(function() {
+    setInterval(getSensorValues, 20000);
+  });
+
+  $(document).ready(function() {
+    setInterval(snapImage, 25000);
+  });
+
+  $("#processImage").click(function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'snapImage',
+      },
+      success: function(json) {
+        $('#cameraID').attr('src', json.image_json);
+        $('#cameraDateID').text('As of: ' + json.cameraDateJSON);
+        $('#summaryDateID').text('As of: ' + json.cameraDateJSON);
+        $('#growthDateID').text('As of: ' + json.cameraDateJSON);
+        $('#labelPlant1Growth').text(json.plant1_json);
+        $('#labelPlant2Growth').text(json.plant2_json);
+        $('#labelPlant3Growth').text(json.plant3_json);
+        $('#labelPlant4Growth').text(json.plant4_json);
+        $('#labelPlant5Growth').text(json.plant5_json);
+        $('#labelPlant6Growth').text(json.plant6_json);
+        $('#labelPlant7Growth').text(json.plant7_json);
+        $('#labelPlant8Growth').text(json.plant8_json);
+        $('#labelPlant9Growth').text(json.plant9_json);
+        $('#labelPlant10Growth').text(json.plant10_json);
+        $('#daysID').text(json.daysCounter_json);
+        $('#lastDayID').text('Age since: ' + json.cameraDateJSON);
+      },
+    });
+  });
+
+  $("#onFan").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onFan',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelFans').text('On');
+      },
+
+    });
+  });
+
+  $("#offFan").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offFan',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelFans').text('Off');
+      },
+
+    });
+  });
+
+  $("#onLights").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onLights',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelLights').text('On');
+      },
+
+    });
+  });
+
+  $("#offLights").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'offLights',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelLights').text('Off');
+      },
+
+    });
+  });
+
+  $("#onWater").click(function(e) {
+
+    e.preventDefault();
+    $('#labelWater').text('On');
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onWater',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelWater').text('Off');
+      },
+
+    });
+  });
+
+
+  $("#onSeed").click(function(e) {
+
+    e.preventDefault();
+    $('#labelSeed').text('On');
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onSeed',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelSeed').text('Off');
+      },
+
+    });
+  });
+
+  $("#onCalibration").click(function(e) {
+
+    e.preventDefault();
+    $('#labelCalibration').text('On');
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onCalibration',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelCalibration').text('Off');
+      },
+
+    });
+  });
+
+  $("#onMode1").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onMode1',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelMode').text("Mode " + json.mode_json);
+        $('#labelGrid').text(json.grid_json);
+        $('#growthContainer').remove()
+        $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+          '<span class="tooltiptext">Crop Growth Status</span>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode1_vision_system_obj_global.plant1}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode1_vision_system_obj_global.plant2}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode1_vision_system_obj_global.plant3}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode1_vision_system_obj_global.plant4}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode1_vision_system_obj_global.plant5}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode1_vision_system_obj_global.plant6}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode1_vision_system_obj_global.plant7}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode1_vision_system_obj_global.plant8}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode1_vision_system_obj_global.plant9}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode1_vision_system_obj_global.plant10}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+          '</div>' +
+          '</div>')
+      },
+
+    });
+  });
+
+  $("#onMode2").click(function(e) {
+
+    e.preventDefault();
+
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onMode2',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelMode').text("Mode " + json.mode_json);
+        $('#labelGrid').text(json.grid_json);
+        $('#growthContainer').remove()
+        $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+          '<span class="tooltiptext">Crop Growth Status</span>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode2_vision_system_obj_global.plant1}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode2_vision_system_obj_global.plant2}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode2_vision_system_obj_global.plant3}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode2_vision_system_obj_global.plant4}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode2_vision_system_obj_global.plant5}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode2_vision_system_obj_global.plant6}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode2_vision_system_obj_global.plant7}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode2_vision_system_obj_global.plant8}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+          '</div>' +
+          '</div>')
+      },
+
+    });
+  });
+
+  $("#onMode3").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onMode3',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelMode').text("Mode " + json.mode_json);
+        $('#labelGrid').text(json.grid_json);
+        $('#growthContainer').remove()
+        $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+          '<span class="tooltiptext">Crop Growth Status</span>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode3_vision_system_obj_global.plant1}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode3_vision_system_obj_global.plant2}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode3_vision_system_obj_global.plant3}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode3_vision_system_obj_global.plant4}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode3_vision_system_obj_global.plant5}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode3_vision_system_obj_global.plant6}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode3_vision_system_obj_global.plant7}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode3_vision_system_obj_global.plant8}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode3_vision_system_obj_global.plant9}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode3_vision_system_obj_global.plant10}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant11Growth">{{mode3_vision_system_obj_global.plant11}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 11</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant12Growth">{{mode3_vision_system_obj_global.plant12}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 12</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant13Growth">{{mode3_vision_system_obj_global.plant13}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 13</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant14Growth">{{mode3_vision_system_obj_global.plant14}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 14</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant15Growth">{{mode3_vision_system_obj_global.plant15}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 15</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant16Growth">{{mode3_vision_system_obj_global.plant16}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 16</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant17Growth">{{mode3_vision_system_obj_global.plant17}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 17</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant18Growth">{{mode3_vision_system_obj_global.plant18}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 18</a>' +
+          '</div>')
+      },
+
+    });
+  });
+
+  $("#onMode4").click(function(e) {
+
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'onMode4',
+
+      },
+      success: function(json) {
+        document.getElementById("mainForm").reset();
+        $('#labelMode').text("Mode " + json.mode_json);
+        $('#labelGrid').text(json.grid_json);
+        $('#growthContainer').remove()
+        $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+          '<span class="tooltiptext">Crop Growth Status</span>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode4_vision_system_obj_global.plant1}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode4_vision_system_obj_global.plant2}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode4_vision_system_obj_global.plant3}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode4_vision_system_obj_global.plant4}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode4_vision_system_obj_global.plant5}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode4_vision_system_obj_global.plant6}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode4_vision_system_obj_global.plant7}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode4_vision_system_obj_global.plant8}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode4_vision_system_obj_global.plant9}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode4_vision_system_obj_global.plant10}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant11Growth">{{mode4_vision_system_obj_global.plant11}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 11</a>' +
+          '</div>' +
+          '<div class="circle small">' +
+          '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant12Growth">{{mode4_vision_system_obj_global.plant12}}</a>' +
+          '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 12</a>' +
+          '</div>' +
+          '</div>')
+      },
+
+    });
+  });
+
+
+  function setup() {
+    $.ajax({
+      type: 'POST',
+      url: '{% url "mainPage" %}',
+      data: {
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'setup',
+      },
+      success: function(json) {
+        if (json.modeNumber === 1) {
+          $('#growthContainer').remove()
+          $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+            '<span class="tooltiptext">Crop Growth Status</span>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode1_vision_system_obj_global.plant1}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode1_vision_system_obj_global.plant2}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode1_vision_system_obj_global.plant3}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode1_vision_system_obj_global.plant4}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode1_vision_system_obj_global.plant5}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode1_vision_system_obj_global.plant6}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode1_vision_system_obj_global.plant7}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode1_vision_system_obj_global.plant8}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode1_vision_system_obj_global.plant9}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode1_vision_system_obj_global.plant10}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+            '</div>' +
+            '</div>')
+        } else if (json.modeNumber === 2) {
+          $('#growthContainer').remove()
+          $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+            '<span class="tooltiptext">Crop Growth Status</span>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode2_vision_system_obj_global.plant1}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode2_vision_system_obj_global.plant2}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode2_vision_system_obj_global.plant3}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode2_vision_system_obj_global.plant4}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode2_vision_system_obj_global.plant5}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode2_vision_system_obj_global.plant6}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode2_vision_system_obj_global.plant7}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode2_vision_system_obj_global.plant8}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+            '</div>' +
+            '</div>')
+        } else if (json.modeNumber === 3) {
+          $('#growthContainer').remove()
+          $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+            '<span class="tooltiptext">Crop Growth Status</span>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode3_vision_system_obj_global.plant1}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode3_vision_system_obj_global.plant2}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode3_vision_system_obj_global.plant3}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode3_vision_system_obj_global.plant4}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode3_vision_system_obj_global.plant5}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode3_vision_system_obj_global.plant6}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode3_vision_system_obj_global.plant7}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode3_vision_system_obj_global.plant8}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode3_vision_system_obj_global.plant9}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode3_vision_system_obj_global.plant10}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant11Growth">{{mode3_vision_system_obj_global.plant11}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 11</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant12Growth">{{mode3_vision_system_obj_global.plant12}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 12</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant13Growth">{{mode3_vision_system_obj_global.plant13}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 13</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant14Growth">{{mode3_vision_system_obj_global.plant14}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 14</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant15Growth">{{mode3_vision_system_obj_global.plant15}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 15</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant16Growth">{{mode3_vision_system_obj_global.plant16}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 16</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant17Growth">{{mode3_vision_system_obj_global.plant17}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 17</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant18Growth">{{mode3_vision_system_obj_global.plant18}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 18</a>' +
+            '</div>')
+        } else if (json.modeNumber === 4) {
+          $('#growthContainer').remove()
+          $('#growthContainer_permanent').append('<div class="growthContainer" id="growthContainer">' +
+            '<span class="tooltiptext">Crop Growth Status</span>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant1Growth">{{mode4_vision_system_obj_global.plant1}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 1</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant2Growth">{{mode4_vision_system_obj_global.plant2}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 2</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant3Growth">{{mode4_vision_system_obj_global.plant3}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 3</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant4Growth">{{mode4_vision_system_obj_global.plant4}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 4</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant5Growth">{{mode4_vision_system_obj_global.plant5}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 5</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant6Growth">{{mode4_vision_system_obj_global.plant6}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 6</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant7Growth">{{mode4_vision_system_obj_global.plant7}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 7</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant8Growth">{{mode4_vision_system_obj_global.plant8}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 8</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant9Growth">{{mode4_vision_system_obj_global.plant9}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 9</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant10Growth">{{mode4_vision_system_obj_global.plant10}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 10</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant11Growth">{{mode4_vision_system_obj_global.plant11}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 11</a>' +
+            '</div>' +
+            '<div class="circle small">' +
+            '<a style="font-size: 45px; margin-top: 30%; margin-bottom: -5%;" id="labelPlant12Growth">{{mode4_vision_system_obj_global.plant12}}</a>' +
+            '<a style="font-size: 18px; font-family: Simplifica; margin-top: 37px; margin-bottom: 0px;">Plant 12</a>' +
+            '</div>' +
+            '</div>')
+        }
+      },
+    });
+  }
+</script>
+
+</html>
